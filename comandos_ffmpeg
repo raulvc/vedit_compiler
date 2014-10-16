@@ -1,0 +1,29 @@
+# cut
+ffmpeg -i movie.mp4 -ss 00:00:03 -t 00:00:08 -async 1 -strict -2 cut.mp4
+
+# write
+ffmpeg -i sub_video3.mp4 -vf drawtext="fontfile=/usr/share/fonts/TTF/DejaVuSerif.ttf:text='Teste':fontsize=20:fontcolor=yellow:x=(w-text_w)/2:y=(h-text_h-line_h)/2" -strict -2 with_text3.mp4
+
+# scale
+ffmpeg -i input.mpg -vf scale=400:300 -strict -2 output.mpg
+
+# watermark
+ffmpeg -i sub_video3.mp4 -vf "movie=logo.jpg [logo]; [in][logo] overlay=W-w-10:H-h-10, fade=in:0:20 [out]" -strict -2 teste.mp4
+
+# padding
+ffmpeg -i sub_video3.mp4 -vf "pad=iw+100:ih+100:0:0:color=black" -strict -2 teste.mp4
+
+# volumeboost
+ffmpeg -i sub_video3.mp4 -vol $((256*4)) -strict -2 teste.mp4
+
+# vflip
+ffmpeg -i sub_video3.mp4 -vf vflip -strict -2 teste.mp4
+
+# hflip
+ffmpeg -i sub_video3.mp4 -vf hflip -strict -2 teste.mp4
+
+# rotate
+direita:
+ffmpeg -i sub_video3.mp4 -vf "transpose=1" -strict -2 teste.mp4
+esquerda:
+ffmpeg -i sub_video3.mp4 -vf "transpose=2" -strict -2 teste.mp4
