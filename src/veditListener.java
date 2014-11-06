@@ -8,48 +8,26 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface veditListener extends ParseTreeListener {
 	/**
-	 * Enter a parse tree produced by {@link veditParser#clause}.
+	 * Enter a parse tree produced by {@link veditParser#convert_clause}.
 	 * @param ctx the parse tree
 	 */
-	void enterClause(@NotNull veditParser.ClauseContext ctx);
+	void enterConvert_clause(@NotNull veditParser.Convert_clauseContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link veditParser#clause}.
+	 * Exit a parse tree produced by {@link veditParser#convert_clause}.
 	 * @param ctx the parse tree
 	 */
-	void exitClause(@NotNull veditParser.ClauseContext ctx);
+	void exitConvert_clause(@NotNull veditParser.Convert_clauseContext ctx);
 
 	/**
-	 * Enter a parse tree produced by {@link veditParser#clauses}.
+	 * Enter a parse tree produced by {@link veditParser#editing}.
 	 * @param ctx the parse tree
 	 */
-	void enterClauses(@NotNull veditParser.ClausesContext ctx);
+	void enterEditing(@NotNull veditParser.EditingContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link veditParser#clauses}.
+	 * Exit a parse tree produced by {@link veditParser#editing}.
 	 * @param ctx the parse tree
 	 */
-	void exitClauses(@NotNull veditParser.ClausesContext ctx);
-
-	/**
-	 * Enter a parse tree produced by {@link veditParser#cutting}.
-	 * @param ctx the parse tree
-	 */
-	void enterCutting(@NotNull veditParser.CuttingContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link veditParser#cutting}.
-	 * @param ctx the parse tree
-	 */
-	void exitCutting(@NotNull veditParser.CuttingContext ctx);
-
-	/**
-	 * Enter a parse tree produced by {@link veditParser#script}.
-	 * @param ctx the parse tree
-	 */
-	void enterScript(@NotNull veditParser.ScriptContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link veditParser#script}.
-	 * @param ctx the parse tree
-	 */
-	void exitScript(@NotNull veditParser.ScriptContext ctx);
+	void exitEditing(@NotNull veditParser.EditingContext ctx);
 
 	/**
 	 * Enter a parse tree produced by {@link veditParser#commands}.
@@ -74,13 +52,46 @@ public interface veditListener extends ParseTreeListener {
 	void exitCommand(@NotNull veditParser.CommandContext ctx);
 
 	/**
-	 * Enter a parse tree produced by {@link veditParser#editing}.
+	 * Enter a parse tree produced by {@link veditParser#cutting}.
 	 * @param ctx the parse tree
 	 */
-	void enterEditing(@NotNull veditParser.EditingContext ctx);
+	void enterCutting(@NotNull veditParser.CuttingContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link veditParser#editing}.
+	 * Exit a parse tree produced by {@link veditParser#cutting}.
 	 * @param ctx the parse tree
 	 */
-	void exitEditing(@NotNull veditParser.EditingContext ctx);
+	void exitCutting(@NotNull veditParser.CuttingContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link veditParser#script}.
+	 * @param ctx the parse tree
+	 */
+	void enterScript(@NotNull veditParser.ScriptContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link veditParser#script}.
+	 * @param ctx the parse tree
+	 */
+	void exitScript(@NotNull veditParser.ScriptContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link veditParser#clauses}.
+	 * @param ctx the parse tree
+	 */
+	void enterClauses(@NotNull veditParser.ClausesContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link veditParser#clauses}.
+	 * @param ctx the parse tree
+	 */
+	void exitClauses(@NotNull veditParser.ClausesContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link veditParser#clause}.
+	 * @param ctx the parse tree
+	 */
+	void enterClause(@NotNull veditParser.ClauseContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link veditParser#clause}.
+	 * @param ctx the parse tree
+	 */
+	void exitClause(@NotNull veditParser.ClauseContext ctx);
 }

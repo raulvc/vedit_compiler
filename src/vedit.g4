@@ -29,15 +29,18 @@ DIRECTION: 'left'|'right';
 
 FORMAT: '"' FORMAT_TYPE '"';
 
-FORMAT_TYPE: 'mp4'|'avi'|'mpg';
+FORMAT_TYPE: 'mp4'|'avi'|'mpg'|'mkv'|'jpg'|'png';
 
 // Como só unix paths serão tratados, o separador é a barra normal
 SEPARATOR: '/';
-
+FILENAME: CHARACTER (CHARACTER | NUMBER | '_')* '.' FORMAT_TYPE;
+FILEORFOLDER: '.' | '..' | FILENAME;
+HOMEFOLDER: '~';
 // ex: /home/raul/file.mp4 ou ./file.mp4
-FILEPATH: '"' '.'? (SEPARATOR (~[\r\n"])*)* '"';
+FILEPATH: '"'(HOMEFOLDER SEPARATOR)? (FILEORFOLDER SEPARATOR)* FILENAME'"';
 
 NUMBER: '0'..'9';
+CHARACTER: 'a'..'z'|'A'..'Z';
 TEXT: '"' (~[\r\n"] | '""')* '"';
 
 COMMENT: '#' ~[\r\n'}']* -> skip;          
@@ -53,12 +56,11 @@ command: editing | cutting;
 
 cutting: CUT FILEPATH TO FILEPATH FROM TIME TO TIME;
 
-editing: EDIT FILEPATH LEFTBRACKET clauses* RIGHTBRACKET;
+editing: EDIT FILEPATH LEFTBRACKET clauses+ RIGHTBRACKET;
 
-clauses: clause | FROM TIME TO TIME LEFTBRACKET clause* RIGHTBRACKET;
+clauses: (clause | convert_clause) | FROM TIME TO TIME LEFTBRACKET clause* RIGHTBRACKET;
 
 clause: 
-    CONVERT TO FORMAT |
     SCALE (NUMBER)+ COLLON (NUMBER)+ |
     SPEEDUP (NUMBER)+ |
     SLOWDOWN (NUMBER)+ |
@@ -70,3 +72,5 @@ clause:
     VFLIP |
     ROTATE DIRECTION
 ;
+
+convert_clause: CONVERT TO FORMAT;

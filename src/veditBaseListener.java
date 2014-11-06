@@ -16,52 +16,26 @@ public class veditBaseListener implements veditListener {
 	 * <p/>
 	 * The default implementation does nothing.
 	 */
-	@Override public void enterClause(@NotNull veditParser.ClauseContext ctx) { }
+	@Override public void enterConvert_clause(@NotNull veditParser.Convert_clauseContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 * <p/>
 	 * The default implementation does nothing.
 	 */
-	@Override public void exitClause(@NotNull veditParser.ClauseContext ctx) { }
+	@Override public void exitConvert_clause(@NotNull veditParser.Convert_clauseContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
 	 * <p/>
 	 * The default implementation does nothing.
 	 */
-	@Override public void enterClauses(@NotNull veditParser.ClausesContext ctx) { }
+	@Override public void enterEditing(@NotNull veditParser.EditingContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 * <p/>
 	 * The default implementation does nothing.
 	 */
-	@Override public void exitClauses(@NotNull veditParser.ClausesContext ctx) { }
-
-	/**
-	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
-	 */
-	@Override public void enterCutting(@NotNull veditParser.CuttingContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
-	 */
-	@Override public void exitCutting(@NotNull veditParser.CuttingContext ctx) { }
-
-	/**
-	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
-	 */
-	@Override public void enterScript(@NotNull veditParser.ScriptContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 * <p/>
-	 * The default implementation does nothing.
-	 */
-	@Override public void exitScript(@NotNull veditParser.ScriptContext ctx) { }
+	@Override public void exitEditing(@NotNull veditParser.EditingContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
@@ -94,13 +68,52 @@ public class veditBaseListener implements veditListener {
 	 * <p/>
 	 * The default implementation does nothing.
 	 */
-	@Override public void enterEditing(@NotNull veditParser.EditingContext ctx) { }
+	@Override public void enterCutting(@NotNull veditParser.CuttingContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 * <p/>
 	 * The default implementation does nothing.
 	 */
-	@Override public void exitEditing(@NotNull veditParser.EditingContext ctx) { }
+	@Override public void exitCutting(@NotNull veditParser.CuttingContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterScript(@NotNull veditParser.ScriptContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitScript(@NotNull veditParser.ScriptContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterClauses(@NotNull veditParser.ClausesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitClauses(@NotNull veditParser.ClausesContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void enterClause(@NotNull veditParser.ClauseContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 * <p/>
+	 * The default implementation does nothing.
+	 */
+	@Override public void exitClause(@NotNull veditParser.ClauseContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

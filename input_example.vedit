@@ -1,8 +1,8 @@
 
-edit "nome_do_arquivo.mp4" {
+edit "./nome_do_arquivo.mp4" {	
 	convert to "avi" # converte o formato do video original para avi
 	scale 320:240 # redimensiona o video para a resolucao indicada
-	speedup 3 # aumenta em 3 vezes a velocidade do video
+	speedup 44 # aumenta em 3 vezes a velocidade do video
 	slowdown 1 # reduz em 1 vez a velocidade do video
 	write "teste" # aplica um texto sobre o video	
 }
@@ -10,15 +10,15 @@ edit "nome_do_arquivo.mp4" {
 edit "nome_do_arquivo2.mp4" {
 	from 00:00:03 to 00:00:08 {
 		write "teste"
-		watermark "arquivo.jpg" # adiciona uma imagem pagina dagua
-		padding 30 # adiciona espacamento em pixels (preenche de preto)		
-	}
+		watermark "~/arquivo.jpg" # adiciona uma imagem pagina dagua
+		padding 30 # adiciona espacamento em pixels (preenche de preto)			
+	} 
 	volume_boost 3 # aumenta o volume do video todo pelo fator 3
 	vflip # rotaciona na vertical
 	rotate right # rotaciona 90 graus horario
 	rotate left # rotaciona 90 graus anti-horario 
 }
 
-cut "nome_do_arquivo3.mp4" to "cut_name" from 00:00:03 to 00:00:08 # faz um corte no video original sem alterar e salva em "cut_name.mp4"
+cut "../nome_do_arquivo3.mp4" to "cut_name.mp4" from 00:00:03 to 00:00:08 # faz um corte no video original sem alterar e salva em "cut_name.mp4"
 
 
