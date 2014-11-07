@@ -5,16 +5,26 @@ import java.io.PrintWriter;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 public class Main {
     
-    public static void main(String args[]) throws IOException, RecognitionException {        
-        FileInputStream stream = new FileInputStream(args[0]);
+    public static void main(String args[]) throws IOException, RecognitionException {
+        // Cria um stream a partir de um arquivo
+        FileInputStream stream = new FileInputStream(args[0]);        
         ANTLRInputStream input = new ANTLRInputStream(stream);
+        // Cria um lexer e alimenta-o com o input do arquivo
         veditLexer lexer = new veditLexer(input);        
+        // Cria um fluxo de tokens alimentados pelo lexer
         CommonTokenStream tokens = new CommonTokenStream(lexer);
+        // Cria um parser que se alimenta do fluxo de tokens
         veditParser parser = new veditParser(tokens);
-        parser.script();
+        // Inicia o parser na primeira regra
+        ParseTree tree = parser.script();                
+        // Semântico
+        Integer test = new ExtractVeditBaseVisitor().visit(tree);
+        System.out.println(test);
+        
     }
     
 }

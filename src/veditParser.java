@@ -59,14 +59,6 @@ public class veditParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_script; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof veditListener ) ((veditListener)listener).enterScript(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof veditListener ) ((veditListener)listener).exitScript(this);
-		}
 	}
 
 	public final ScriptContext script() throws RecognitionException {
@@ -100,14 +92,6 @@ public class veditParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_commands; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof veditListener ) ((veditListener)listener).enterCommands(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof veditListener ) ((veditListener)listener).exitCommands(this);
-		}
 	}
 
 	public final CommandsContext commands() throws RecognitionException {
@@ -154,14 +138,6 @@ public class veditParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_command; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof veditListener ) ((veditListener)listener).enterCommand(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof veditListener ) ((veditListener)listener).exitCommand(this);
-		}
 	}
 
 	public final CommandContext command() throws RecognitionException {
@@ -216,14 +192,6 @@ public class veditParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_cutting; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof veditListener ) ((veditListener)listener).enterCutting(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof veditListener ) ((veditListener)listener).exitCutting(this);
-		}
 	}
 
 	public final CuttingContext cutting() throws RecognitionException {
@@ -268,14 +236,6 @@ public class veditParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_editing; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof veditListener ) ((veditListener)listener).enterEditing(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof veditListener ) ((veditListener)listener).exitEditing(this);
-		}
 	}
 
 	public final EditingContext editing() throws RecognitionException {
@@ -337,14 +297,6 @@ public class veditParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_clauses; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof veditListener ) ((veditListener)listener).enterClauses(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof veditListener ) ((veditListener)listener).exitClauses(this);
-		}
 	}
 
 	public final ClausesContext clauses() throws RecognitionException {
@@ -455,14 +407,6 @@ public class veditParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_clause; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof veditListener ) ((veditListener)listener).enterClause(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof veditListener ) ((veditListener)listener).exitClause(this);
-		}
 	}
 
 	public final ClauseContext clause() throws RecognitionException {
@@ -637,14 +581,6 @@ public class veditParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_convert_clause; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof veditListener ) ((veditListener)listener).enterConvert_clause(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof veditListener ) ((veditListener)listener).exitConvert_clause(this);
-		}
 	}
 
 	public final Convert_clauseContext convert_clause() throws RecognitionException {
