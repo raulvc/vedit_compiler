@@ -26,11 +26,11 @@ public class Main {
         // Semântico
         VisitorRun loader = new VisitorRun();
         try {
-            loader.visit(tree);                
-            System.out.println(loader.props);
+            loader.visit(tree);                            
         }
         catch (ParseCancellationException ex){
             // parsing cancelado na análise semântica
+            System.out.println(ex.getMessage());
             System.exit(0);
         }
     }
