@@ -1,34 +1,21 @@
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.antlr.v4.misc.OrderedHashMap;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-/**
- *
- * @author raul
- */
-
 public class VisitorRun extends veditBaseVisitor <Void> {
     
     Map<String,String> props = new OrderedHashMap<String, String>();
-    
-//    @Override
-//    public Void visitScript(veditParser.ScriptContext ctx){        
-//        props.put("teste", "teste2");
-//        return null;
-//    }
+    String current_file; 
+    Boolean convert_set=false;
 
     @Override 
     public Void visitEditing(veditParser.EditingContext ctx) { 
-        // eliminando as aspas e extraindo o filepath
-        String raw_filepath = ctx.FILEPATH().getText();
-        String filepath = raw_filepath.substring(1, raw_filepath.length()-1);                 
+        // eliminando as aspas e extraindo o filepath        
+        String filepath = veditUtil.removeQuotes(ctx.FILEPATH().getText());                 
         File f = new File(filepath);
         // linha do filepath
         Integer pos_filepath = ctx.FILEPATH().getSymbol().getLine();
@@ -49,18 +36,19 @@ public class VisitorRun extends veditBaseVisitor <Void> {
             throw new ParseCancellationException(msg);            
         }                
                 
-        System.out.println(f.getAbsolutePath());
-        return visitChildren(ctx);
-        
+        current_file = f.getAbsolutePath();
+//        System.out.println(f.getAbsolutePath());
+        visitChildren(ctx);
+        convert_set = false;
+        return null;
     }
     
     @Override 
     public Void visitCutting(veditParser.CuttingContext ctx) {         
         // o primeiro FILEPATH é o arquivo a ser cortado
-        TerminalNode fp = ctx.FILEPATH().get(0);
-        String raw_filepath = fp.getText();
+        TerminalNode fp = ctx.FILEPATH().get(0);        
         // eliminando as aspas e extraindo o filepath
-        String filepath = raw_filepath.substring(1, raw_filepath.length()-1);                 
+        String filepath = veditUtil.removeQuotes(fp.getText());                 
         File f = new File(filepath);
         // linha do filepath
         Integer pos_filepath = fp.getSymbol().getLine();
@@ -85,8 +73,8 @@ public class VisitorRun extends veditBaseVisitor <Void> {
         // testando o alvo (o arquivo que será gerado)
         TerminalNode tp = ctx.FILEPATH().get(1);
         Integer pos_targetpath = tp.getSymbol().getLine();
-        String raw_targetpath = tp.getText();
-        String targetpath = raw_targetpath.substring(1, raw_targetpath.length()-1);
+        // eliminando as aspas
+        String targetpath = veditUtil.removeQuotes(tp.getText());
         File f_target = new File(targetpath);
         if (!veditUtil.canWrite(f_target)){
             // não consegue criar o arquivo
@@ -105,8 +93,13 @@ public class VisitorRun extends veditBaseVisitor <Void> {
     }
     
     @Override 
-    public Void visitClause(veditParser.ClauseContext ctx) {
+    public Void visitClause(veditParser.ClauseContext ctx) {        
         String raw_clause = ctx.getText();
+        
+        System.out.println(current_file);
+        System.out.println(raw_clause);
+        System.out.println("========");
+                
         if (ctx.SCALE() != null){
             // operação de scale            
             String param = raw_clause.substring(raw_clause.lastIndexOf("scale")+"scale".length());            
@@ -147,56 +140,71 @@ public class VisitorRun extends veditBaseVisitor <Void> {
         else if (ctx.WRITE() != null){
             // operação de write
         }
+        else if (ctx.WATERMARK() != null){
+            // operação de marca d'água
+            String param = raw_clause.substring(raw_clause.lastIndexOf("watermark")+"watermark".length());
+            // removendo aspas
+            String imgpath = veditUtil.removeQuotes(param);
+            Integer pos_watermark = ctx.WATERMARK().getSymbol().getLine();
+            File imgfile = new File(imgpath);
+            if (!veditUtil.canRead(imgfile)){
+                // não consegue acessar a imagem
+                String msg = "Linha " + String.format("%d", pos_watermark) + ": Não é possível acessar o arquivo " + imgpath;
+                throw new ParseCancellationException(msg);
+            }            
+        }
+        else if (ctx.PADDING() != null){
+            // operação de padding
+        }
+        else if (ctx.VOLUME_BOOST() != null){
+            // operação de aumentar o volume
+        }
+        else if (ctx.HFLIP() != null){
+            // operação de virar horizontalmente (espelhar)
+        }
+        else if (ctx.VFLIP() != null){
+            // operação de virar verticalmente
+        }
+        else if (ctx.ROTATE() != null){
+            // operação de rotacionar
+        }
         
         return visitChildren(ctx); 
     }
     
+    @Override
+    public Void visitConvert_clause(veditParser.Convert_clauseContext ctx) {
+        // operação de convert        
+        String fmt = veditUtil.removeQuotes(ctx.FORMAT().getText());
+        Integer pos_convert = ctx.FORMAT().getSymbol().getLine();
+        if (!veditUtil.isVideoFormat(fmt)){
+            // formato errado para imagem
+            String msg = "Linha " + String.format("%d", pos_convert) + ": Formato imcompatível para conversão: " + fmt;
+            throw new ParseCancellationException(msg);
+        }
+        else if (convert_set){
+            // mais de um convert no mesmo contexto
+            String msg = "Linha " + String.format("%d", pos_convert) + ": Apenas uma conversão é aceita por arquivo.";
+            throw new ParseCancellationException(msg);
+        }
+        convert_set = true;
+        return visitChildren(ctx); 
+    }
+    
+    @Override 
+    public Void visitClauses(veditParser.ClausesContext ctx) { 
+        if (ctx.FROM() != null){
+            // é um bloco            
+            // TODO: criar arquivo para alterar por fora
+            String filepath_backup = current_file;
+            current_file = "temporary.mp4";
+            visitChildren(ctx);
+            current_file = filepath_backup;
+            // TODO: reconstruir o arquivo            
+            return null;
+        }        
+        return visitChildren(ctx);
+    }
+    
     
 }
-
-
-//public class veditBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements veditVisitor<T> {
-//	/**
-//	 * {@inheritDoc}
-//	 *
-//	 * <p>The default implementation returns the result of calling
-//	 * {@link #visitChildren} on {@code ctx}.</p>
-//	 */
-		
-//	@Override public T visitConvert_clause(@NotNull veditParser.Convert_clauseContext ctx) { return visitChildren(ctx); }
-//	/**
-//	 * {@inheritDoc}
-//	 *
-//	 * <p>The default implementation returns the result of calling
-//	 * {@link #visitChildren} on {@code ctx}.</p>
-//	 */
-//	@Override public T visitClauses(@NotNull veditParser.ClausesContext ctx) { return visitChildren(ctx); }
-//	/**
-//	 * {@inheritDoc}
-//	 *
-//	 * <p>The default implementation returns the result of calling
-//	 * {@link #visitChildren} on {@code ctx}.</p>
-//	 */
-
-//	@Override public T visitScript(@NotNull veditParser.ScriptContext ctx) { return visitChildren(ctx); }
-//	/**
-//	 * {@inheritDoc}
-//	 *
-//	 * <p>The default implementation returns the result of calling
-//	 * {@link #visitChildren} on {@code ctx}.</p>
-//	 */
-//	@Override public T visitCommands(@NotNull veditParser.CommandsContext ctx) { return visitChildren(ctx); }
-//	/**
-//	 * {@inheritDoc}
-//	 *
-//	 * <p>The default implementation returns the result of calling
-//	 * {@link #visitChildren} on {@code ctx}.</p>
-//	 */
-//	@Override public T visitCommand(@NotNull veditParser.CommandContext ctx) { return visitChildren(ctx); }
-//	/**
-//	 * {@inheritDoc}
-//	 *
-//	 * <p>The default implementation returns the result of calling
-//	 * {@link #visitChildren} on {@code ctx}.</p>
-//	 */
-//}

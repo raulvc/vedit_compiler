@@ -3,6 +3,6 @@ Erros semânticos que queremos tratar
 (ok) se o arquivo existe e tem permissão read/write
 (ok) se a extensao do arquivo é suportada
 (ok) fator sensato para alguns parametros (speedup, slowdown, scale)
-- convert aparece so uma vez e nao pode aparecer no bloco from
+(ok) convert aparece so uma vez e nao pode aparecer no bloco from
 - tempo do bloco from possivel?
 - valor do padding possivel?
