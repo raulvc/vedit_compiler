@@ -34,10 +34,10 @@ FORMAT_TYPE: 'mp4'|'avi'|'mpg'|'mkv'|'jpg'|'png';
 // Como só unix paths serão tratados, o separador é a barra normal
 SEPARATOR: '/';
 FILENAME: CHARACTER (CHARACTER | NUMBER | '_')* '.' FORMAT_TYPE;
-FILEORFOLDER: '.' | '..' | FILENAME;
+FILEORFOLDER: '.' | '..' | CHARACTER (CHARACTER | NUMBER | '_')* | FILENAME;
 HOMEFOLDER: '~';
 // ex: /home/raul/file.mp4 ou ./file.mp4
-FILEPATH: '"'(HOMEFOLDER SEPARATOR)? (FILEORFOLDER SEPARATOR)* FILENAME'"';
+FILEPATH: '"'((HOMEFOLDER SEPARATOR)?|SEPARATOR?) (FILEORFOLDER SEPARATOR)* FILENAME'"';
 
 NUMBER: '0'..'9';
 CHARACTER: 'a'..'z'|'A'..'Z';

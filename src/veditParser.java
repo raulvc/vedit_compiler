@@ -1,4 +1,4 @@
-// Generated from /home/raul/estudos/cc2/trab2/vedit_compiler/src/vedit.g4 by ANTLR 4.1
+// Generated from vedit.g4 by ANTLR 4.4
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -10,6 +10,8 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class veditParser extends Parser {
+	static { RuntimeMetaData.checkVersion("4.4", RuntimeMetaData.VERSION); }
+
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
@@ -45,6 +47,9 @@ public class veditParser extends Parser {
 	public String[] getRuleNames() { return ruleNames; }
 
 	@Override
+	public String getSerializedATN() { return _serializedATN; }
+
+	@Override
 	public ATN getATN() { return _ATN; }
 
 	public veditParser(TokenStream input) {
@@ -59,6 +64,11 @@ public class veditParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_script; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof veditVisitor ) return ((veditVisitor<? extends T>)visitor).visitScript(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ScriptContext script() throws RecognitionException {
@@ -92,6 +102,11 @@ public class veditParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_commands; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof veditVisitor ) return ((veditVisitor<? extends T>)visitor).visitCommands(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final CommandsContext commands() throws RecognitionException {
@@ -138,6 +153,11 @@ public class veditParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_command; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof veditVisitor ) return ((veditVisitor<? extends T>)visitor).visitCommand(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final CommandContext command() throws RecognitionException {
@@ -174,24 +194,29 @@ public class veditParser extends Parser {
 	}
 
 	public static class CuttingContext extends ParserRuleContext {
-		public TerminalNode FILEPATH(int i) {
-			return getToken(veditParser.FILEPATH, i);
+		public List<TerminalNode> TIME() { return getTokens(veditParser.TIME); }
+		public TerminalNode TO(int i) {
+			return getToken(veditParser.TO, i);
 		}
 		public TerminalNode CUT() { return getToken(veditParser.CUT, 0); }
-		public List<TerminalNode> TIME() { return getTokens(veditParser.TIME); }
+		public List<TerminalNode> TO() { return getTokens(veditParser.TO); }
+		public TerminalNode FROM() { return getToken(veditParser.FROM, 0); }
 		public TerminalNode TIME(int i) {
 			return getToken(veditParser.TIME, i);
 		}
 		public List<TerminalNode> FILEPATH() { return getTokens(veditParser.FILEPATH); }
-		public TerminalNode TO(int i) {
-			return getToken(veditParser.TO, i);
+		public TerminalNode FILEPATH(int i) {
+			return getToken(veditParser.FILEPATH, i);
 		}
-		public List<TerminalNode> TO() { return getTokens(veditParser.TO); }
-		public TerminalNode FROM() { return getToken(veditParser.FROM, 0); }
 		public CuttingContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_cutting; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof veditVisitor ) return ((veditVisitor<? extends T>)visitor).visitCutting(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final CuttingContext cutting() throws RecognitionException {
@@ -222,20 +247,25 @@ public class veditParser extends Parser {
 	}
 
 	public static class EditingContext extends ParserRuleContext {
+		public TerminalNode RIGHTBRACKET() { return getToken(veditParser.RIGHTBRACKET, 0); }
 		public ClausesContext clauses(int i) {
 			return getRuleContext(ClausesContext.class,i);
 		}
-		public TerminalNode LEFTBRACKET() { return getToken(veditParser.LEFTBRACKET, 0); }
-		public TerminalNode RIGHTBRACKET() { return getToken(veditParser.RIGHTBRACKET, 0); }
-		public TerminalNode FILEPATH() { return getToken(veditParser.FILEPATH, 0); }
 		public TerminalNode EDIT() { return getToken(veditParser.EDIT, 0); }
 		public List<ClausesContext> clauses() {
 			return getRuleContexts(ClausesContext.class);
 		}
+		public TerminalNode FILEPATH() { return getToken(veditParser.FILEPATH, 0); }
+		public TerminalNode LEFTBRACKET() { return getToken(veditParser.LEFTBRACKET, 0); }
 		public EditingContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_editing; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof veditVisitor ) return ((veditVisitor<? extends T>)visitor).visitEditing(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final EditingContext editing() throws RecognitionException {
@@ -279,12 +309,12 @@ public class veditParser extends Parser {
 		public Convert_clauseContext convert_clause() {
 			return getRuleContext(Convert_clauseContext.class,0);
 		}
-		public TerminalNode LEFTBRACKET() { return getToken(veditParser.LEFTBRACKET, 0); }
-		public List<TerminalNode> TIME() { return getTokens(veditParser.TIME); }
+		public TerminalNode RIGHTBRACKET() { return getToken(veditParser.RIGHTBRACKET, 0); }
 		public ClauseContext clause(int i) {
 			return getRuleContext(ClauseContext.class,i);
 		}
-		public TerminalNode RIGHTBRACKET() { return getToken(veditParser.RIGHTBRACKET, 0); }
+		public List<TerminalNode> TIME() { return getTokens(veditParser.TIME); }
+		public TerminalNode FROM() { return getToken(veditParser.FROM, 0); }
 		public TerminalNode TIME(int i) {
 			return getToken(veditParser.TIME, i);
 		}
@@ -292,11 +322,16 @@ public class veditParser extends Parser {
 		public List<ClauseContext> clause() {
 			return getRuleContexts(ClauseContext.class);
 		}
-		public TerminalNode FROM() { return getToken(veditParser.FROM, 0); }
+		public TerminalNode LEFTBRACKET() { return getToken(veditParser.LEFTBRACKET, 0); }
 		public ClausesContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_clauses; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof veditVisitor ) return ((veditVisitor<? extends T>)visitor).visitClauses(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ClausesContext clauses() throws RecognitionException {
@@ -385,28 +420,33 @@ public class veditParser extends Parser {
 	}
 
 	public static class ClauseContext extends ParserRuleContext {
-		public TerminalNode SLOWDOWN() { return getToken(veditParser.SLOWDOWN, 0); }
-		public TerminalNode TEXT() { return getToken(veditParser.TEXT, 0); }
-		public TerminalNode VOLUME_BOOST() { return getToken(veditParser.VOLUME_BOOST, 0); }
-		public TerminalNode VFLIP() { return getToken(veditParser.VFLIP, 0); }
-		public TerminalNode DIRECTION() { return getToken(veditParser.DIRECTION, 0); }
-		public TerminalNode HFLIP() { return getToken(veditParser.HFLIP, 0); }
-		public TerminalNode PADDING() { return getToken(veditParser.PADDING, 0); }
-		public TerminalNode COLLON() { return getToken(veditParser.COLLON, 0); }
-		public TerminalNode SCALE() { return getToken(veditParser.SCALE, 0); }
-		public TerminalNode ROTATE() { return getToken(veditParser.ROTATE, 0); }
-		public TerminalNode WATERMARK() { return getToken(veditParser.WATERMARK, 0); }
 		public TerminalNode NUMBER(int i) {
 			return getToken(veditParser.NUMBER, i);
 		}
-		public TerminalNode FILEPATH() { return getToken(veditParser.FILEPATH, 0); }
 		public TerminalNode WRITE() { return getToken(veditParser.WRITE, 0); }
-		public List<TerminalNode> NUMBER() { return getTokens(veditParser.NUMBER); }
+		public TerminalNode PADDING() { return getToken(veditParser.PADDING, 0); }
+		public TerminalNode VFLIP() { return getToken(veditParser.VFLIP, 0); }
+		public TerminalNode FILEPATH() { return getToken(veditParser.FILEPATH, 0); }
+		public TerminalNode VOLUME_BOOST() { return getToken(veditParser.VOLUME_BOOST, 0); }
+		public TerminalNode SLOWDOWN() { return getToken(veditParser.SLOWDOWN, 0); }
+		public TerminalNode SCALE() { return getToken(veditParser.SCALE, 0); }
 		public TerminalNode SPEEDUP() { return getToken(veditParser.SPEEDUP, 0); }
+		public TerminalNode TEXT() { return getToken(veditParser.TEXT, 0); }
+		public TerminalNode WATERMARK() { return getToken(veditParser.WATERMARK, 0); }
+		public TerminalNode HFLIP() { return getToken(veditParser.HFLIP, 0); }
+		public TerminalNode ROTATE() { return getToken(veditParser.ROTATE, 0); }
+		public List<TerminalNode> NUMBER() { return getTokens(veditParser.NUMBER); }
+		public TerminalNode DIRECTION() { return getToken(veditParser.DIRECTION, 0); }
+		public TerminalNode COLLON() { return getToken(veditParser.COLLON, 0); }
 		public ClauseContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_clause; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof veditVisitor ) return ((veditVisitor<? extends T>)visitor).visitClause(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final ClauseContext clause() throws RecognitionException {
@@ -574,13 +614,18 @@ public class veditParser extends Parser {
 	}
 
 	public static class Convert_clauseContext extends ParserRuleContext {
-		public TerminalNode FORMAT() { return getToken(veditParser.FORMAT, 0); }
 		public TerminalNode CONVERT() { return getToken(veditParser.CONVERT, 0); }
+		public TerminalNode FORMAT() { return getToken(veditParser.FORMAT, 0); }
 		public TerminalNode TO() { return getToken(veditParser.TO, 0); }
 		public Convert_clauseContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_convert_clause; }
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof veditVisitor ) return ((veditVisitor<? extends T>)visitor).visitConvert_clause(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Convert_clauseContext convert_clause() throws RecognitionException {
@@ -606,7 +651,7 @@ public class veditParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\uacf5\uee8c\u4f5d\u8b0d\u4a45\u78bd\u1b2f\u3378\3\"u\4\2\t\2\4\3\t"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\"u\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\3\2\3\2\3\3\6\3\26"+
 		"\n\3\r\3\16\3\27\3\4\3\4\5\4\34\n\4\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3"+
 		"\5\3\6\3\6\3\6\3\6\6\6+\n\6\r\6\16\6,\3\6\3\6\3\7\3\7\5\7\63\n\7\3\7\3"+
@@ -614,19 +659,19 @@ public class veditParser extends Parser {
 		"\b\r\b\16\bF\3\b\3\b\6\bK\n\b\r\b\16\bL\3\b\3\b\6\bQ\n\b\r\b\16\bR\3\b"+
 		"\3\b\6\bW\n\b\r\b\16\bX\3\b\3\b\3\b\3\b\3\b\3\b\6\ba\n\b\r\b\16\bb\3\b"+
 		"\3\b\6\bg\n\b\r\b\16\bh\3\b\3\b\3\b\3\b\5\bo\n\b\3\t\3\t\3\t\3\t\3\t\2"+
-		"\n\2\4\6\b\n\f\16\20\2\2\u0081\2\22\3\2\2\2\4\25\3\2\2\2\6\33\3\2\2\2"+
-		"\b\35\3\2\2\2\n&\3\2\2\2\f@\3\2\2\2\16n\3\2\2\2\20p\3\2\2\2\22\23\5\4"+
-		"\3\2\23\3\3\2\2\2\24\26\5\6\4\2\25\24\3\2\2\2\26\27\3\2\2\2\27\25\3\2"+
-		"\2\2\27\30\3\2\2\2\30\5\3\2\2\2\31\34\5\n\6\2\32\34\5\b\5\2\33\31\3\2"+
-		"\2\2\33\32\3\2\2\2\34\7\3\2\2\2\35\36\7\17\2\2\36\37\7\35\2\2\37 \7\20"+
-		"\2\2 !\7\35\2\2!\"\7\21\2\2\"#\7\25\2\2#$\7\20\2\2$%\7\25\2\2%\t\3\2\2"+
-		"\2&\'\7\3\2\2\'(\7\35\2\2(*\7\22\2\2)+\5\f\7\2*)\3\2\2\2+,\3\2\2\2,*\3"+
-		"\2\2\2,-\3\2\2\2-.\3\2\2\2./\7\23\2\2/\13\3\2\2\2\60\63\5\16\b\2\61\63"+
-		"\5\20\t\2\62\60\3\2\2\2\62\61\3\2\2\2\63A\3\2\2\2\64\65\7\21\2\2\65\66"+
-		"\7\25\2\2\66\67\7\20\2\2\678\7\25\2\28<\7\22\2\29;\5\16\b\2:9\3\2\2\2"+
-		";>\3\2\2\2<:\3\2\2\2<=\3\2\2\2=?\3\2\2\2><\3\2\2\2?A\7\23\2\2@\62\3\2"+
-		"\2\2@\64\3\2\2\2A\r\3\2\2\2BD\7\5\2\2CE\7\36\2\2DC\3\2\2\2EF\3\2\2\2F"+
-		"D\3\2\2\2FG\3\2\2\2GH\3\2\2\2HJ\7\24\2\2IK\7\36\2\2JI\3\2\2\2KL\3\2\2"+
+		"\2\n\2\4\6\b\n\f\16\20\2\2\u0081\2\22\3\2\2\2\4\25\3\2\2\2\6\33\3\2\2"+
+		"\2\b\35\3\2\2\2\n&\3\2\2\2\f@\3\2\2\2\16n\3\2\2\2\20p\3\2\2\2\22\23\5"+
+		"\4\3\2\23\3\3\2\2\2\24\26\5\6\4\2\25\24\3\2\2\2\26\27\3\2\2\2\27\25\3"+
+		"\2\2\2\27\30\3\2\2\2\30\5\3\2\2\2\31\34\5\n\6\2\32\34\5\b\5\2\33\31\3"+
+		"\2\2\2\33\32\3\2\2\2\34\7\3\2\2\2\35\36\7\17\2\2\36\37\7\35\2\2\37 \7"+
+		"\20\2\2 !\7\35\2\2!\"\7\21\2\2\"#\7\25\2\2#$\7\20\2\2$%\7\25\2\2%\t\3"+
+		"\2\2\2&\'\7\3\2\2\'(\7\35\2\2(*\7\22\2\2)+\5\f\7\2*)\3\2\2\2+,\3\2\2\2"+
+		",*\3\2\2\2,-\3\2\2\2-.\3\2\2\2./\7\23\2\2/\13\3\2\2\2\60\63\5\16\b\2\61"+
+		"\63\5\20\t\2\62\60\3\2\2\2\62\61\3\2\2\2\63A\3\2\2\2\64\65\7\21\2\2\65"+
+		"\66\7\25\2\2\66\67\7\20\2\2\678\7\25\2\28<\7\22\2\29;\5\16\b\2:9\3\2\2"+
+		"\2;>\3\2\2\2<:\3\2\2\2<=\3\2\2\2=?\3\2\2\2><\3\2\2\2?A\7\23\2\2@\62\3"+
+		"\2\2\2@\64\3\2\2\2A\r\3\2\2\2BD\7\5\2\2CE\7\36\2\2DC\3\2\2\2EF\3\2\2\2"+
+		"FD\3\2\2\2FG\3\2\2\2GH\3\2\2\2HJ\7\24\2\2IK\7\36\2\2JI\3\2\2\2KL\3\2\2"+
 		"\2LJ\3\2\2\2LM\3\2\2\2Mo\3\2\2\2NP\7\6\2\2OQ\7\36\2\2PO\3\2\2\2QR\3\2"+
 		"\2\2RP\3\2\2\2RS\3\2\2\2So\3\2\2\2TV\7\7\2\2UW\7\36\2\2VU\3\2\2\2WX\3"+
 		"\2\2\2XV\3\2\2\2XY\3\2\2\2Yo\3\2\2\2Z[\7\b\2\2[o\7 \2\2\\]\7\t\2\2]o\7"+
@@ -637,7 +682,7 @@ public class veditParser extends Parser {
 		"\2\2\2nl\3\2\2\2o\17\3\2\2\2pq\7\4\2\2qr\7\20\2\2rs\7\27\2\2s\21\3\2\2"+
 		"\2\17\27\33,\62<@FLRXbhn";
 	public static final ATN _ATN =
-		ATNSimulator.deserialize(_serializedATN.toCharArray());
+		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {
 		_decisionToDFA = new DFA[_ATN.getNumberOfDecisions()];
 		for (int i = 0; i < _ATN.getNumberOfDecisions(); i++) {
