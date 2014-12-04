@@ -52,9 +52,9 @@ public class SemanticVisitor extends veditBaseVisitor <Void> {
             String msg = "Linha " + String.format("%d", pos_filepath) + ": Arquivo " + filepath + " não encontrado";
             throw new ParseCancellationException(msg);            
         }
-        else if (!f.canWrite()){
-            // sem permissão de escrita            
-            String msg = "Linha " + String.format("%d", pos_filepath) + ": Arquivo " + filepath + " sem permissão de escrita";
+        else if (!f.canRead()){
+            // sem permissão de leitura            
+            String msg = "Linha " + String.format("%d", pos_filepath) + ": Arquivo " + filepath + " sem permissão de leitura";
             throw new ParseCancellationException(msg);
             
         }        
@@ -63,15 +63,7 @@ public class SemanticVisitor extends veditBaseVisitor <Void> {
             String msg = "Linha " + String.format("%d", pos_filepath) + ": Extensão do arquivo " + filepath + " não suportada";
             throw new ParseCancellationException(msg);            
         }
-        // testando o tempo                
-        Long target_max_time_in_ms = veditUtil.stringToMs(ctx.TIME(1).getText());
-        Long real_max_time_in_ms = veditUtil.durationInMs(f);
-        if (target_max_time_in_ms > real_max_time_in_ms){
-            // tempo de corte excede a duração do vídeo
-            int pos_time = ctx.TIME(1).getSymbol().getLine();
-            String msg = "Linha " + String.format("%d", pos_time) + ": tempo de corte excede a duração do vídeo.";
-            throw new ParseCancellationException(msg);
-        }                
+        
         // testando o arquivo alvo (o arquivo que será gerado)
         TerminalNode tp = ctx.FILEPATH().get(1);
         Integer pos_targetpath = tp.getSymbol().getLine();
@@ -88,7 +80,17 @@ public class SemanticVisitor extends veditBaseVisitor <Void> {
             // formato desconhecido p/ vídeo (ou é jpg ou é png, caso contrário é barrado no léxico)            
             String msg = "Linha " + String.format("%d", pos_targetpath) + ": Extensão do arquivo " + targetpath + " não suportada";
             throw new ParseCancellationException(msg);
-        }                
+        }
+        
+        // testando o tempo                
+        Long target_max_time_in_ms = veditUtil.stringToMs(ctx.TIME(1).getText());
+        Long real_max_time_in_ms = veditUtil.durationInMs(f);
+        if (target_max_time_in_ms > real_max_time_in_ms){
+            // tempo de corte excede a duração do vídeo
+            int pos_time = ctx.TIME(1).getSymbol().getLine();
+            String msg = "Linha " + String.format("%d", pos_time) + ": tempo de corte excede a duração do vídeo.";
+            throw new ParseCancellationException(msg);
+        }
         
         return visitChildren(ctx);
         

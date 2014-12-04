@@ -75,11 +75,16 @@ public class veditUtil {
         return Arrays.asList(accepted_video_formats).contains(extension);
     }
     
-    static String renameFile(String filename, String suffix){        
+    static String renameFile(String filepath, String suffix){
+        // tenho um problema com o ffmpeg que se colocar o mesmo arquivo de saída que o
+        // de entrada ele da crash no meio da execução
+        File f = new File(filepath);
+        String path = filepath.substring(0,filepath.lastIndexOf(File.separator)+1);
+        String filename = f.getName();        
         String[] aux = filename.split("\\.");                
         String name = aux[0];
         String extension = aux[1];        
-        return name + suffix + '.' + extension;
+        return path + name + suffix + '.' + extension;
     }
     
 }

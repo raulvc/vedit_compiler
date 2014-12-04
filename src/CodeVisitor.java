@@ -1,5 +1,7 @@
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -8,8 +10,10 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
     PrintWriter writer;
     String current_file; 
     Boolean convert_set = false; // flag que indica se em um mesmo arquivo já foi configurado um convert    
+    ArrayList<String> batch; // comandos que devem ser executados por último
 
     public CodeVisitor() {
+        this.batch = new ArrayList<String>();
         try {
             this.writer = new PrintWriter("script.sh", "UTF-8");
         }
@@ -19,55 +23,46 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
         }
     }
 
-//    @Override 
-//    public Void visitEditing(veditParser.EditingContext ctx) { 
-//        // eliminando as aspas e extraindo o filepath        
-//        String filepath = veditUtil.removeQuotes(ctx.FILEPATH().getText());                 
-//        File f = new File(filepath);
-//        current_file = f.getAbsolutePath();        
-//        
-//        visitChildren(ctx);
-//        return null;
-//    }
+    @Override 
+    public Void visitEditing(veditParser.EditingContext ctx) { 
+        // eliminando as aspas e extraindo o filepath        
+        String filepath = veditUtil.removeQuotes(ctx.FILEPATH().getText());                 
+        File f = new File(filepath);
+        current_file = f.getAbsolutePath();                
+        visitChildren(ctx);
+        return null;
+    }
     
     @Override 
     public Void visitCutting(veditParser.CuttingContext ctx) {         
         // o primeiro FILEPATH é o arquivo a ser cortado
-        TerminalNode fp = ctx.FILEPATH().get(0);        
-        // eliminando as aspas e extraindo o filepath
-        String filepath = veditUtil.removeQuotes(fp.getText());
-        String targetpath = veditUtil.renameFile(filepath, "_cut");
+        TerminalNode fp = ctx.FILEPATH().get(0);
+        TerminalNode tp = ctx.FILEPATH().get(1);
+        // eliminando as aspas e extraindo o filepath        
+        File f = new File(veditUtil.removeQuotes(fp.getText()));
+        String filepath = f.getAbsolutePath();        
+        File t = new File(veditUtil.removeQuotes(tp.getText()));
+        String targetpath = t.getAbsolutePath();
         
         String cmd = "ffmpeg -i " + filepath + " -ss " + ctx.TIME(0).getText() + " -t " +
-                ctx.TIME(1).getText() + " -async 1 -strict -2 " + targetpath;
+                ctx.TIME(1).getText() + " -async 1 -strict -2 -y " + targetpath;
         writer.println(cmd);                  
         return visitChildren(ctx);        
     }
-//    
-//    @Override 
-//    public Void visitClause(veditParser.ClauseContext ctx) {        
-//        String raw_clause = ctx.getText();       
-//        System.out.println(current_file);
-//        System.out.println(raw_clause);
-//        System.out.println("========");
-//                
-//        if (ctx.SCALE() != null){
-//            // operação de scale            
-//            String param = raw_clause.substring(raw_clause.lastIndexOf("scale")+"scale".length());            
-//            Integer width = Integer.parseInt(param.substring(0,param.lastIndexOf(':')));            
-//            Integer height = Integer.parseInt(param.substring(param.lastIndexOf(':')+1));
-//            Integer pos_scale = ctx.SCALE().getSymbol().getLine();
-//            if (width > 1600 || width < 20){                
-//                // valores insanos para largura
-//                String msg = "Linha " + String.format("%d", pos_scale) + ": Largura inviável: " + width;
-//                throw new ParseCancellationException(msg);
-//            }
-//            else if (height > 1600 || height < 20){                
-//                // valores insanos para altura
-//                String msg = "Linha " + String.format("%d", pos_scale) + ": Altura inviável: " + height;
-//                throw new ParseCancellationException(msg);
-//            }                        
-//        }
+    
+    @Override 
+    public Void visitClause(veditParser.ClauseContext ctx) {        
+        String raw_clause = ctx.getText();               
+                
+        if (ctx.SCALE() != null){
+            // operação de scale            
+            String param = raw_clause.substring(raw_clause.lastIndexOf("scale")+"scale".length());
+            String tempfile = veditUtil.renameFile(current_file, "_out");
+            String cmd = "ffmpeg -i " + current_file + " -vf scale=" + param +
+                " -strict -2 -y " + tempfile;
+            writer.println(cmd);
+            writer.println("mv " + tempfile + " " + current_file);
+        }
 //        else if (ctx.SPEEDUP() != null){
 //            // operação de speedup
 //            Integer speedup_factor = Integer.parseInt(raw_clause.substring(raw_clause.lastIndexOf("speedup")+"speedup".length()));
@@ -88,53 +83,79 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
 //                throw new ParseCancellationException(msg);
 //            }
 //        }
-//        else if (ctx.WRITE() != null){
-//            // operação de write
-//        }
-//        else if (ctx.WATERMARK() != null){
-//            // operação de marca d'água
-//            String param = raw_clause.substring(raw_clause.lastIndexOf("watermark")+"watermark".length());
-//            // removendo aspas
-//            String imgpath = veditUtil.removeQuotes(param);
-//            Integer pos_watermark = ctx.WATERMARK().getSymbol().getLine();
-//            File imgfile = new File(imgpath);
-//            if (!veditUtil.canRead(imgfile)){
-//                // não consegue acessar a imagem
-//                String msg = "Linha " + String.format("%d", pos_watermark) + ": Não é possível acessar o arquivo " + imgpath;
-//                throw new ParseCancellationException(msg);
-//            }            
-//        }
-//        else if (ctx.PADDING() != null){
-//            // operação de padding            
-//            String param = raw_clause.substring(raw_clause.lastIndexOf("padding")+"padding".length());
-//            Integer padding = Integer.parseInt(param);
-//            File f = new File(current_file);
-//            Integer width = veditUtil.width(f);
-//            Integer height = veditUtil.height(f);
-//            if (!(padding < width && padding < height)){                
-//                // tamanho do padding excede o tamanho do video em uma das coordenadas
-//                // obs: só estou trabalhando com padding de mesmo tamanho em x e em y
-//                Integer pos_padding = ctx.PADDING().getSymbol().getLine();
-//                String msg = "Linha " + String.format("%d", pos_padding) + ": Padding excede o tamanho permitido.";
-//                throw new ParseCancellationException(msg);
-//            }
-//        }
-//        else if (ctx.VOLUME_BOOST() != null){
-//            // operação de aumentar o volume
-//        }
-//        else if (ctx.HFLIP() != null){
-//            // operação de virar horizontalmente (espelhar)
-//        }
-//        else if (ctx.VFLIP() != null){
-//            // operação de virar verticalmente
-//        }
-//        else if (ctx.ROTATE() != null){
-//            // operação de rotacionar
-//        }
-//        
-//        return visitChildren(ctx); 
-//    }
-//    
+        else if (ctx.WRITE() != null){
+            // operação de write
+            String param = raw_clause.substring(raw_clause.lastIndexOf("write")+"write".length()); 
+            param = param.replaceAll("\"", "\'");
+            String tempfile = veditUtil.renameFile(current_file, "_out");
+            String cmd = "ffmpeg -i " + current_file + " -vf drawtext=\"fontfile=/usr/share/fonts/TTF/DejaVuSerif.ttf:text=" +
+                    param + ":fontsize=20:fontcolor=yellow:x=(w-text_w)/2:y=(h-text_h-line_h)/2\" -strict -2 -y " +
+                    tempfile;                    
+            writer.println(cmd);
+            writer.println("mv " + tempfile + " " + current_file);
+        }
+        else if (ctx.WATERMARK() != null){
+            // operação de marca d'água
+            String param = raw_clause.substring(raw_clause.lastIndexOf("watermark")+"watermark".length());
+            String tempfile = veditUtil.renameFile(current_file, "_out");
+            // removendo aspas
+            String imgpath = veditUtil.removeQuotes(param);
+            String cmd = "ffmpeg -i " + current_file + " -vf \"movie=" + imgpath +
+                " [logo]; [in][logo] overlay=W-w-10:H-h-10, fade=in:0:20 [out]\" -strict 2 -y "
+                 + tempfile;
+            writer.println(cmd);
+            writer.println("mv " + tempfile + " " + current_file);
+        }
+        else if (ctx.PADDING() != null){
+            // operação de padding            
+            String param = raw_clause.substring(raw_clause.lastIndexOf("padding")+"padding".length());
+            String tempfile = veditUtil.renameFile(current_file, "_out");
+            String cmd = "ffmpeg -i " + current_file + " -vf \"pad=iw+" + param + ":ih+" + param + ":0:0:color=black\" -strict -2 -y " 
+                    + tempfile;
+            writer.println(cmd);
+            writer.println("mv " + tempfile + " " + current_file);
+        }
+        else if (ctx.VOLUME_BOOST() != null){
+            // operação de aumentar o volume
+            String param = raw_clause.substring(raw_clause.lastIndexOf("volume_boost")+"volume_boost".length());
+            String tempfile = veditUtil.renameFile(current_file, "_out");
+            String cmd = "ffmpeg -i " + current_file + " -vol $((256*" + param + ")) -strict -2 -y " 
+                    + tempfile;
+            writer.println(cmd);
+            writer.println("mv " + tempfile + " " + current_file);
+        }
+        else if (ctx.HFLIP() != null){
+            // operação de virar horizontalmente (espelhar)
+            String tempfile = veditUtil.renameFile(current_file, "_out");
+            String cmd = "ffmpeg -i " + current_file + " -vf hflip -strict -2 -y " + tempfile;
+            writer.println(cmd);
+            writer.println("mv " + tempfile + " " + current_file);
+        }
+        else if (ctx.VFLIP() != null){
+            // operação de virar verticalmente
+            String tempfile = veditUtil.renameFile(current_file, "_out");
+            String cmd = "ffmpeg -i " + current_file + " -vf vflip -strict -2 -y " + tempfile;
+            writer.println(cmd);
+            writer.println("mv " + tempfile + " " + current_file);
+        }
+        else if (ctx.ROTATE() != null){
+            // operação de rotacionar
+            String param = raw_clause.substring(raw_clause.lastIndexOf("rotate")+"rotate".length());
+            String tempfile = veditUtil.renameFile(current_file, "_out");
+            String cmd;
+            if (param.equals("left")){                
+                cmd = "ffmpeg -i " + current_file + " -vf \"transpose=2\" -strict -2 -y " + tempfile;
+            }
+            else{
+                cmd = "ffmpeg -i " + current_file + " -vf \"transpose=1\" -strict -2 -y " + tempfile;
+            }
+            writer.println(cmd);
+            writer.println("mv " + tempfile + " " + current_file);
+        }
+        
+        return visitChildren(ctx); 
+    }
+    
 //    @Override
 //    public Void visitConvert_clause(veditParser.Convert_clauseContext ctx) {
 //        // operação de convert        
