@@ -1,3 +1,8 @@
+/*
+    Única função deste listener é parar a execução no primeiro erro
+    (a exceção é tratada no main)
+*/
+
 import java.util.BitSet;
 import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.Parser;
@@ -6,7 +11,6 @@ import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.atn.ATNConfigSet;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
-
 
 public class StopFlowErrorListener implements ANTLRErrorListener {        
 

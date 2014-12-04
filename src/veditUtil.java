@@ -1,6 +1,9 @@
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * Alguns utilitários para ajudar no parsing
@@ -101,6 +104,13 @@ public class veditUtil {
         String filename = f.getName();        
         String[] aux = filename.split("\\.");                
         return aux[1];
+    }
+    
+    static void setExecutable(){
+        try {                    
+            Runtime.getRuntime().exec("chmod u+x script.sh");
+        } catch (IOException ex) {            
+        }
     }
     
 }

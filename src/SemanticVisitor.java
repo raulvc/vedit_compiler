@@ -13,7 +13,8 @@ public class SemanticVisitor extends veditBaseVisitor <Void> {
     @Override 
     public Void visitEditing(veditParser.EditingContext ctx) { 
         // eliminando as aspas e extraindo o filepath        
-        String filepath = veditUtil.removeQuotes(ctx.FILEPATH().getText());                 
+        String path = veditUtil.removeQuotes(ctx.FILEPATH().getText());
+        String filepath = path.replace("~",System.getProperty("user.home"));        
         File f = new File(filepath);
         // linha do filepath
         Integer pos_filepath = ctx.FILEPATH().getSymbol().getLine();
@@ -46,7 +47,7 @@ public class SemanticVisitor extends veditBaseVisitor <Void> {
         // o primeiro FILEPATH é o arquivo a ser cortado
         TerminalNode fp = ctx.FILEPATH().get(0);        
         // eliminando as aspas e extraindo o filepath
-        String filepath = veditUtil.removeQuotes(fp.getText());                 
+        String filepath = veditUtil.removeQuotes(fp.getText().replace("~",System.getProperty("user.home")));        
         File f = new File(filepath);
         // linha do filepath
         Integer pos_filepath = fp.getSymbol().getLine();
@@ -71,7 +72,7 @@ public class SemanticVisitor extends veditBaseVisitor <Void> {
         TerminalNode tp = ctx.FILEPATH().get(1);
         Integer pos_targetpath = tp.getSymbol().getLine();
         // eliminando as aspas
-        String targetpath = veditUtil.removeQuotes(tp.getText());
+        String targetpath = veditUtil.removeQuotes(tp.getText().replace("~",System.getProperty("user.home")));
         File f_target = new File(targetpath);
         if (!veditUtil.canWrite(f_target)){
             // não consegue criar o arquivo
@@ -146,7 +147,7 @@ public class SemanticVisitor extends veditBaseVisitor <Void> {
             // operação de marca d'água
             String param = raw_clause.substring(raw_clause.lastIndexOf("watermark")+"watermark".length());
             // removendo aspas
-            String imgpath = veditUtil.removeQuotes(param);
+            String imgpath = veditUtil.removeQuotes(param.replace("~",System.getProperty("user.home")));            
             Integer pos_watermark = ctx.WATERMARK().getSymbol().getLine();
             File imgfile = new File(imgpath);
             if (!veditUtil.canRead(imgfile)){

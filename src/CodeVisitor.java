@@ -19,7 +19,7 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
     public CodeVisitor() {
         this.batch = new ArrayList<String>();
         try {
-            this.writer = new PrintWriter("script.sh", "UTF-8");
+            this.writer = new PrintWriter("script.sh", "UTF-8");            
         }
         catch (IOException ex){
             String msg = "Não foi possível gerar o script de saída: " + ex.getMessage();
@@ -41,8 +41,10 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
     @Override 
     public Void visitEditing(veditParser.EditingContext ctx) { 
         // eliminando as aspas e extraindo o filepath        
-        String filepath = veditUtil.removeQuotes(ctx.FILEPATH().getText());                 
-        File f = new File(filepath);
+        String path = veditUtil.removeQuotes(ctx.FILEPATH().getText());                 
+        // tratando o ~
+        String filepath = path.replace("~",System.getProperty("user.home"));        
+        File f = new File(filepath);        
         current_file = f.getAbsolutePath();                
         return visitChildren(ctx);                
     }
@@ -53,9 +55,11 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
         TerminalNode fp = ctx.FILEPATH().get(0);
         TerminalNode tp = ctx.FILEPATH().get(1);
         // eliminando as aspas e extraindo o filepath        
-        File f = new File(veditUtil.removeQuotes(fp.getText()));
+        String fpath = veditUtil.removeQuotes(fp.getText().replace("~",System.getProperty("user.home")));        
+        File f = new File(fpath);
         String filepath = f.getAbsolutePath();        
-        File t = new File(veditUtil.removeQuotes(tp.getText()));
+        String tpath = veditUtil.removeQuotes(tp.getText().replace("~",System.getProperty("user.home")));
+        File t = new File(tpath);
         String targetpath = t.getAbsolutePath();
         String from = ctx.TIME(0).getText();
         String to = ctx.TIME(1).getText();
@@ -118,9 +122,9 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
             String param = raw_clause.substring(raw_clause.lastIndexOf("watermark")+"watermark".length());
             String tempfile = veditUtil.renameFile(current_file, "_out");
             // removendo aspas
-            String imgpath = veditUtil.removeQuotes(param);
+            String imgpath = veditUtil.removeQuotes(param.replace("~",System.getProperty("user.home")));
             String cmd = "ffmpeg -i " + current_file + " -vf \"movie=" + imgpath +
-                " [logo]; [in][logo] overlay=W-w-10:H-h-10, fade=in:0:20 [out]\" -strict 2 -y "
+                " [logo]; [in][logo] overlay=W-w-10:H-h-10, fade=in:0:20 [out]\" -strict -2 -y "
                  + tempfile;
             writer.println("# Watermarking");
             writer.println(cmd);
@@ -214,11 +218,11 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
             writer.println("# ======= Entering a time block ======= #");
             writer.println("mkdir -p temp");
             String init_part = "ffmpeg -i " + current_file + " -ss 00:00:00 -t "
-                    + from + "-async 1 -strict 2 -y temp/temp_0_initial." + extension;
+                    + from + " -async 1 -strict -2 -y temp/temp_0_initial." + extension;
             String filtered_part = "ffmpeg -i " + current_file + " -ss " + from
-                    + " -t " + to + "-async 1 -strict 2 -y temp/temp_1_filtering." + extension;
+                    + " -t " + to + " -async 1 -strict -2 -y temp/temp_1_filtering." + extension;
             String final_part = "ffmpeg -i " + current_file + " -ss " + to
-                    + "-async 1 -strict 2 -y temp/temp_2_final." + extension;
+                    + " -async 1 -strict -2 -y temp/temp_2_final." + extension;
             writer.println("# separating parts");
             writer.println(init_part);
             writer.println(filtered_part);

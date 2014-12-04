@@ -52,6 +52,7 @@ public class Main {
             System.exit(0);
         }
         code_loader.writer.close();
+        veditUtil.setExecutable();
     }
     
 }
