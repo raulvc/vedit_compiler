@@ -96,4 +96,11 @@ public class veditUtil {
         return path + name + '.' + extension;
     }
     
+    static String extractExtension(String filepath){
+        File f = new File(filepath);        
+        String filename = f.getName();        
+        String[] aux = filename.split("\\.");                
+        return aux[1];
+    }
+    
 }

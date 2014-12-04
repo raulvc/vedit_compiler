@@ -1,3 +1,7 @@
+/*
+    Visitor responsável pela geração de código
+*/
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -188,31 +192,56 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
         batch.add(cmd);
         return visitChildren(ctx); 
     }
-//    
-//    @Override 
-//    public Void visitClauses(veditParser.ClausesContext ctx) { 
-//        if (ctx.FROM() != null){
-//            // é um bloco            
-//            // testando o tempo                
-//            Long target_max_time_in_ms = veditUtil.stringToMs(ctx.TIME(1).getText());
-//            File f = new File(current_file);
-//            Long real_max_time_in_ms = veditUtil.durationInMs(f);
-//            if (target_max_time_in_ms > real_max_time_in_ms){
-//                // tempo do bloco excede a duração do vídeo
-//                int pos_time = ctx.TIME(1).getSymbol().getLine();
-//                String msg = "Linha " + String.format("%d", pos_time) + ": tempo do bloco excede a duração do vídeo.";
-//                throw new ParseCancellationException(msg);
-//            }
-//            // TODO: criar arquivo para alterar por fora
-//            String filepath_backup = current_file;
-//            current_file = "temporary.mp4";
-//            visitChildren(ctx);
-//            current_file = filepath_backup;
-//            // TODO: reconstruir o arquivo            
-//            return null;
-//        }        
-//        return visitChildren(ctx);
-//    }
-//    
-//    
+    
+    @Override 
+    public Void visitClauses(veditParser.ClausesContext ctx) { 
+        if (ctx.FROM() != null){
+            // é um bloco                        
+            
+            /* Devido a limitações no ffmpeg, aqui será necessário:
+            *  dividir o vídeo em 3 partes
+            *  - antes da porção a ser editada
+            *  - a porção a ser editada
+            *  - após a porção a ser editada
+            *  aplicar os filtros
+            *  unificar as 3 porções
+            */
+            String filepath_backup = current_file;
+            String from = ctx.TIME(0).getText();
+            String to = ctx.TIME(1).getText();
+            String extension = veditUtil.extractExtension(current_file);
+            
+            writer.println("# ======= Entering a time block ======= #");
+            writer.println("mkdir -p temp");
+            String init_part = "ffmpeg -i " + current_file + " -ss 00:00:00 -t "
+                    + from + "-async 1 -strict 2 -y temp/temp_0_initial." + extension;
+            String filtered_part = "ffmpeg -i " + current_file + " -ss " + from
+                    + " -t " + to + "-async 1 -strict 2 -y temp/temp_1_filtering." + extension;
+            String final_part = "ffmpeg -i " + current_file + " -ss " + to
+                    + "-async 1 -strict 2 -y temp/temp_2_final." + extension;
+            writer.println("# separating parts");
+            writer.println(init_part);
+            writer.println(filtered_part);
+            writer.println(final_part);
+            current_file = "temp/temp_1_filtering." + extension;
+            
+            writer.println("# applying filters");            
+            visitChildren(ctx);
+                
+            // concatenando de volta as porções
+            writer.println("# cleaning up and merging parts");
+            writer.println("rm temp/*_out*");            
+            writer.println("for f in temp/*." + extension + "; do echo \"file '$f'\" >> mergelist.txt; done");
+            writer.println("ffmpeg -f concat -i mergelist.txt -c copy -y " + filepath_backup);
+            writer.println("rm mergelist.txt");
+            writer.println("rm -r temp");
+            writer.println("# ======= Leaving a time block ======= #");
+            
+            current_file = filepath_backup;                       
+            return null;
+        }        
+        return visitChildren(ctx);
+    }
+    
+    
 }

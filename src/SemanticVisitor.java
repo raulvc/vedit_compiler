@@ -1,5 +1,8 @@
+/*
+    Visitor responsável pela análise semântica
+*/
+
 import java.io.File;
-import java.io.PrintWriter;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -215,13 +218,8 @@ public class SemanticVisitor extends veditBaseVisitor <Void> {
                 int pos_time = ctx.TIME(1).getSymbol().getLine();
                 String msg = "Linha " + String.format("%d", pos_time) + ": tempo do bloco excede a duração do vídeo.";
                 throw new ParseCancellationException(msg);
-            }
-            // TODO: criar arquivo para alterar por fora
-            String filepath_backup = current_file;
-            current_file = "temporary.mp4";
-            visitChildren(ctx);
-            current_file = filepath_backup;
-            // TODO: reconstruir o arquivo            
+            }            
+            visitChildren(ctx);            
             return null;
         }        
         return visitChildren(ctx);
