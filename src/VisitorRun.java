@@ -1,6 +1,5 @@
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.Map;
 import org.antlr.v4.misc.OrderedHashMap;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
@@ -10,7 +9,7 @@ public class VisitorRun extends veditBaseVisitor <Void> {
     
     Map<String,String> props = new OrderedHashMap<String, String>();
     String current_file; 
-    Boolean convert_set=false;
+    Boolean convert_set = false;    
 
     @Override 
     public Void visitEditing(veditParser.EditingContext ctx) { 
@@ -36,8 +35,8 @@ public class VisitorRun extends veditBaseVisitor <Void> {
             throw new ParseCancellationException(msg);            
         }                
                 
-        current_file = f.getAbsolutePath();
-//        System.out.println(f.getAbsolutePath());
+        current_file = f.getAbsolutePath();                
+        
         visitChildren(ctx);
         convert_set = false;
         return null;
@@ -62,15 +61,22 @@ public class VisitorRun extends veditBaseVisitor <Void> {
             String msg = "Linha " + String.format("%d", pos_filepath) + ": Arquivo " + filepath + " sem permissão de escrita";
             throw new ParseCancellationException(msg);
             
-        }
-        // testando o formato                             
-        if (!veditUtil.isVideoFormat(f.getName())){
+        }        
+        else if (!veditUtil.isVideoFormat(f.getName())){            
             // formato desconhecido p/ vídeo (ou é jpg ou é png, caso contrário é barrado no léxico)            
             String msg = "Linha " + String.format("%d", pos_filepath) + ": Extensão do arquivo " + filepath + " não suportada";
             throw new ParseCancellationException(msg);            
-        }                                              
-                
-        // testando o alvo (o arquivo que será gerado)
+        }
+        // testando o tempo                
+        Long target_max_time_in_ms = veditUtil.stringToMs(ctx.TIME(1).getText());
+        Long real_max_time_in_ms = veditUtil.durationInMs(f);
+        if (target_max_time_in_ms > real_max_time_in_ms){
+            // tempo de corte excede a duração do vídeo
+            int pos_time = ctx.TIME(1).getSymbol().getLine();
+            String msg = "Linha " + String.format("%d", pos_time) + ": tempo de corte excede a duração do vídeo.";
+            throw new ParseCancellationException(msg);
+        }                
+        // testando o arquivo alvo (o arquivo que será gerado)
         TerminalNode tp = ctx.FILEPATH().get(1);
         Integer pos_targetpath = tp.getSymbol().getLine();
         // eliminando as aspas
@@ -86,7 +92,7 @@ public class VisitorRun extends veditBaseVisitor <Void> {
             // formato desconhecido p/ vídeo (ou é jpg ou é png, caso contrário é barrado no léxico)            
             String msg = "Linha " + String.format("%d", pos_targetpath) + ": Extensão do arquivo " + targetpath + " não suportada";
             throw new ParseCancellationException(msg);
-        }
+        }        
         
         return visitChildren(ctx);
         
@@ -154,7 +160,19 @@ public class VisitorRun extends veditBaseVisitor <Void> {
             }            
         }
         else if (ctx.PADDING() != null){
-            // operação de padding
+            // operação de padding            
+            String param = raw_clause.substring(raw_clause.lastIndexOf("padding")+"padding".length());
+            Integer padding = Integer.parseInt(param);
+            File f = new File(current_file);
+            Integer width = veditUtil.width(f);
+            Integer height = veditUtil.height(f);
+            if (!(padding < width && padding < height)){                
+                // tamanho do padding excede o tamanho do video em uma das coordenadas
+                // obs: só estou trabalhando com padding de mesmo tamanho em x e em y
+                Integer pos_padding = ctx.PADDING().getSymbol().getLine();
+                String msg = "Linha " + String.format("%d", pos_padding) + ": Padding excede o tamanho permitido.";
+                throw new ParseCancellationException(msg);
+            }
         }
         else if (ctx.VOLUME_BOOST() != null){
             // operação de aumentar o volume
@@ -195,6 +213,16 @@ public class VisitorRun extends veditBaseVisitor <Void> {
     public Void visitClauses(veditParser.ClausesContext ctx) { 
         if (ctx.FROM() != null){
             // é um bloco            
+            // testando o tempo                
+            Long target_max_time_in_ms = veditUtil.stringToMs(ctx.TIME(1).getText());
+            File f = new File(current_file);
+            Long real_max_time_in_ms = veditUtil.durationInMs(f);
+            if (target_max_time_in_ms > real_max_time_in_ms){
+                // tempo do bloco excede a duração do vídeo
+                int pos_time = ctx.TIME(1).getSymbol().getLine();
+                String msg = "Linha " + String.format("%d", pos_time) + ": tempo do bloco excede a duração do vídeo.";
+                throw new ParseCancellationException(msg);
+            }
             // TODO: criar arquivo para alterar por fora
             String filepath_backup = current_file;
             current_file = "temporary.mp4";

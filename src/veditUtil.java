@@ -7,6 +7,40 @@ import java.util.Arrays;
  */
 
 public class veditUtil {
+    static Long stringToMs(String ext_duration){
+        String[] time = ext_duration.split(":");
+        Long seconds_to_ms = Long.parseLong(time[2])*1000;
+        Long minutes_to_ms = Long.parseLong(time[1])*60000;
+        Long hours_to_ms = Long.parseLong(time[0])*3600000;
+        return seconds_to_ms + minutes_to_ms + hours_to_ms;
+    }
+    static Long durationInMs(File file){
+        MediaInfo info = new MediaInfo();
+        info.open(file);
+        Long duration_in_ms = Long.parseLong(info.get(MediaInfo.StreamKind.Video, 0, "Duration", 
+                MediaInfo.InfoKind.Text, MediaInfo.InfoKind.Name));        
+        info.close();
+        return duration_in_ms;
+    }
+    
+    static Integer width(File file){
+        MediaInfo info = new MediaInfo();
+        info.open(file);
+        Integer width = Integer.parseInt(info.get(MediaInfo.StreamKind.Video, 0, "Width", 
+                MediaInfo.InfoKind.Text, MediaInfo.InfoKind.Name));        
+        info.close();
+        return width;
+    }
+    
+    static Integer height(File file){
+        MediaInfo info = new MediaInfo();
+        info.open(file);
+        Integer height = Integer.parseInt(info.get(MediaInfo.StreamKind.Video, 0, "Height", 
+                MediaInfo.InfoKind.Text, MediaInfo.InfoKind.Name));        
+        info.close();
+        return height;
+    }
+    
     static String removeQuotes(String quoted_str){
         return quoted_str.substring(1, quoted_str.length()-1);                 
     }
