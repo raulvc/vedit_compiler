@@ -98,11 +98,7 @@ public class SemanticVisitor extends veditBaseVisitor <Void> {
     
     @Override 
     public Void visitClause(veditParser.ClauseContext ctx) {        
-        String raw_clause = ctx.getText();       
-        System.out.println(current_file);
-        System.out.println(raw_clause);
-        System.out.println("========");
-                
+        String raw_clause = ctx.getText();                               
         if (ctx.SCALE() != null){
             // operação de scale            
             String param = raw_clause.substring(raw_clause.lastIndexOf("scale")+"scale".length());            

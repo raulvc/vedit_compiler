@@ -87,4 +87,13 @@ public class veditUtil {
         return path + name + suffix + '.' + extension;
     }
     
+    static String renameExtension(String filepath, String extension){
+        File f = new File(filepath);
+        String path = filepath.substring(0,filepath.lastIndexOf(File.separator)+1);
+        String filename = f.getName();        
+        String[] aux = filename.split("\\.");                
+        String name = aux[0];        
+        return path + name + '.' + extension;
+    }
+    
 }

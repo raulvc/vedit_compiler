@@ -22,6 +22,17 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
             throw new ParseCancellationException(msg);
         }
     }
+    
+    @Override 
+    public Void visitScript(veditParser.ScriptContext ctx) { 
+        visitChildren(ctx); 
+        if (!batch.isEmpty()){            
+            for (String cmd : batch){
+                writer.println(cmd);
+            }
+        }
+        return null;
+    }
 
     @Override 
     public Void visitEditing(veditParser.EditingContext ctx) { 
@@ -29,8 +40,7 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
         String filepath = veditUtil.removeQuotes(ctx.FILEPATH().getText());                 
         File f = new File(filepath);
         current_file = f.getAbsolutePath();                
-        visitChildren(ctx);
-        return null;
+        return visitChildren(ctx);                
     }
     
     @Override 
@@ -43,9 +53,12 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
         String filepath = f.getAbsolutePath();        
         File t = new File(veditUtil.removeQuotes(tp.getText()));
         String targetpath = t.getAbsolutePath();
+        String from = ctx.TIME(0).getText();
+        String to = ctx.TIME(1).getText();
         
-        String cmd = "ffmpeg -i " + filepath + " -ss " + ctx.TIME(0).getText() + " -t " +
-                ctx.TIME(1).getText() + " -async 1 -strict -2 -y " + targetpath;
+        String cmd = "ffmpeg -i " + filepath + " -ss " + from + " -t " +
+                to + " -async 1 -strict -2 -y " + targetpath;
+        writer.println("# Cutting video from " + from + " to " + to);
         writer.println(cmd);                  
         return visitChildren(ctx);        
     }
@@ -60,6 +73,7 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
             String tempfile = veditUtil.renameFile(current_file, "_out");
             String cmd = "ffmpeg -i " + current_file + " -vf scale=" + param +
                 " -strict -2 -y " + tempfile;
+            writer.println("# Scaling to " + param);
             writer.println(cmd);
             writer.println("mv " + tempfile + " " + current_file);
         }
@@ -90,7 +104,8 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
             String tempfile = veditUtil.renameFile(current_file, "_out");
             String cmd = "ffmpeg -i " + current_file + " -vf drawtext=\"fontfile=/usr/share/fonts/TTF/DejaVuSerif.ttf:text=" +
                     param + ":fontsize=20:fontcolor=yellow:x=(w-text_w)/2:y=(h-text_h-line_h)/2\" -strict -2 -y " +
-                    tempfile;                    
+                    tempfile;
+            writer.println("# Writing overlay text " + param);
             writer.println(cmd);
             writer.println("mv " + tempfile + " " + current_file);
         }
@@ -103,6 +118,7 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
             String cmd = "ffmpeg -i " + current_file + " -vf \"movie=" + imgpath +
                 " [logo]; [in][logo] overlay=W-w-10:H-h-10, fade=in:0:20 [out]\" -strict 2 -y "
                  + tempfile;
+            writer.println("# Watermarking");
             writer.println(cmd);
             writer.println("mv " + tempfile + " " + current_file);
         }
@@ -112,6 +128,7 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
             String tempfile = veditUtil.renameFile(current_file, "_out");
             String cmd = "ffmpeg -i " + current_file + " -vf \"pad=iw+" + param + ":ih+" + param + ":0:0:color=black\" -strict -2 -y " 
                     + tempfile;
+            writer.println("# Adding a " + param + "px padding");
             writer.println(cmd);
             writer.println("mv " + tempfile + " " + current_file);
         }
@@ -121,6 +138,7 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
             String tempfile = veditUtil.renameFile(current_file, "_out");
             String cmd = "ffmpeg -i " + current_file + " -vol $((256*" + param + ")) -strict -2 -y " 
                     + tempfile;
+            writer.println("# Raising volume to a factor of "+param);
             writer.println(cmd);
             writer.println("mv " + tempfile + " " + current_file);
         }
@@ -128,6 +146,7 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
             // operação de virar horizontalmente (espelhar)
             String tempfile = veditUtil.renameFile(current_file, "_out");
             String cmd = "ffmpeg -i " + current_file + " -vf hflip -strict -2 -y " + tempfile;
+            writer.println("# HFlipping");
             writer.println(cmd);
             writer.println("mv " + tempfile + " " + current_file);
         }
@@ -135,6 +154,7 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
             // operação de virar verticalmente
             String tempfile = veditUtil.renameFile(current_file, "_out");
             String cmd = "ffmpeg -i " + current_file + " -vf vflip -strict -2 -y " + tempfile;
+            writer.println("# VFlipping");
             writer.println(cmd);
             writer.println("mv " + tempfile + " " + current_file);
         }
@@ -142,13 +162,16 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
             // operação de rotacionar
             String param = raw_clause.substring(raw_clause.lastIndexOf("rotate")+"rotate".length());
             String tempfile = veditUtil.renameFile(current_file, "_out");
-            String cmd;
+            String cmd, comment;
             if (param.equals("left")){                
+                comment = "# Rotating left";
                 cmd = "ffmpeg -i " + current_file + " -vf \"transpose=2\" -strict -2 -y " + tempfile;
             }
             else{
+                comment = "# Rotating right";
                 cmd = "ffmpeg -i " + current_file + " -vf \"transpose=1\" -strict -2 -y " + tempfile;
             }
+            writer.println(comment);
             writer.println(cmd);
             writer.println("mv " + tempfile + " " + current_file);
         }
@@ -156,24 +179,15 @@ public class CodeVisitor extends veditBaseVisitor <Void> {
         return visitChildren(ctx); 
     }
     
-//    @Override
-//    public Void visitConvert_clause(veditParser.Convert_clauseContext ctx) {
-//        // operação de convert        
-//        String fmt = veditUtil.removeQuotes(ctx.FORMAT().getText());
-//        Integer pos_convert = ctx.FORMAT().getSymbol().getLine();
-//        if (!veditUtil.isVideoFormat(fmt)){
-//            // formato errado para imagem
-//            String msg = "Linha " + String.format("%d", pos_convert) + ": Formato imcompatível para conversão: " + fmt;
-//            throw new ParseCancellationException(msg);
-//        }
-//        else if (convert_set){
-//            // mais de um convert no mesmo contexto
-//            String msg = "Linha " + String.format("%d", pos_convert) + ": Apenas uma conversão é aceita por arquivo.";
-//            throw new ParseCancellationException(msg);
-//        }
-//        convert_set = true;
-//        return visitChildren(ctx); 
-//    }
+    @Override
+    public Void visitConvert_clause(veditParser.Convert_clauseContext ctx) {
+        // operação de convert        
+        String fmt = veditUtil.removeQuotes(ctx.FORMAT().getText());        
+        String cmd = "ffmpeg -i " + current_file + " " + veditUtil.renameExtension(current_file, fmt);
+        batch.add("# convert to " + fmt);
+        batch.add(cmd);
+        return visitChildren(ctx); 
+    }
 //    
 //    @Override 
 //    public Void visitClauses(veditParser.ClausesContext ctx) { 
