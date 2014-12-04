@@ -39,7 +39,7 @@ public class veditUtil {
                 MediaInfo.InfoKind.Text, MediaInfo.InfoKind.Name));        
         info.close();
         return height;
-    }
+    }       
     
     static String removeQuotes(String quoted_str){
         return quoted_str.substring(1, quoted_str.length()-1);                 
@@ -73,6 +73,13 @@ public class veditUtil {
         String extension = filename.substring(filename.lastIndexOf('.')+1);    
         String[] accepted_video_formats = new String[] {"jpg","png"};
         return Arrays.asList(accepted_video_formats).contains(extension);
+    }
+    
+    static String renameFile(String filename, String suffix){        
+        String[] aux = filename.split("\\.");                
+        String name = aux[0];
+        String extension = aux[1];        
+        return name + suffix + '.' + extension;
     }
     
 }

@@ -1,15 +1,11 @@
-
 import java.io.File;
-import java.util.Map;
-import org.antlr.v4.misc.OrderedHashMap;
+import java.io.PrintWriter;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-public class VisitorRun extends veditBaseVisitor <Void> {
-    
-    Map<String,String> props = new OrderedHashMap<String, String>();
+public class SemanticVisitor extends veditBaseVisitor <Void> {        
     String current_file; 
-    Boolean convert_set = false;    
+    Boolean convert_set = false; // flag que indica se em um mesmo arquivo já foi configurado um convert    
 
     @Override 
     public Void visitEditing(veditParser.EditingContext ctx) { 
@@ -92,7 +88,7 @@ public class VisitorRun extends veditBaseVisitor <Void> {
             // formato desconhecido p/ vídeo (ou é jpg ou é png, caso contrário é barrado no léxico)            
             String msg = "Linha " + String.format("%d", pos_targetpath) + ": Extensão do arquivo " + targetpath + " não suportada";
             throw new ParseCancellationException(msg);
-        }        
+        }                
         
         return visitChildren(ctx);
         
@@ -100,8 +96,7 @@ public class VisitorRun extends veditBaseVisitor <Void> {
     
     @Override 
     public Void visitClause(veditParser.ClauseContext ctx) {        
-        String raw_clause = ctx.getText();
-        
+        String raw_clause = ctx.getText();       
         System.out.println(current_file);
         System.out.println(raw_clause);
         System.out.println("========");

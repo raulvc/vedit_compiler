@@ -24,15 +24,26 @@ public class Main {
         // Inicia o parser na primeira regra
         ParseTree tree = parser.script();                
         // Semântico
-        VisitorRun loader = new VisitorRun();
+        SemanticVisitor semantic_loader = new SemanticVisitor();
         try {
-            loader.visit(tree);                            
+            semantic_loader.visit(tree);                            
         }
         catch (ParseCancellationException ex){
             // parsing cancelado na análise semântica
-            System.out.println(ex.getMessage());
+            System.out.println(ex.getMessage());            
             System.exit(0);
         }
+        // Geração de código
+        CodeVisitor code_loader = new CodeVisitor();
+        try{
+            code_loader.visit(tree);
+        }
+        catch (ParseCancellationException ex){
+            // parsing cancelado na geração de código
+            System.out.println(ex.getMessage());            
+            System.exit(0);
+        }
+        code_loader.writer.close();
     }
     
 }
