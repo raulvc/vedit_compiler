@@ -17,9 +17,20 @@ public class Main {
         // Cria um fluxo de tokens alimentados pelo lexer
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         // Cria um parser que se alimenta do fluxo de tokens
-        veditParser parser = new veditParser(tokens);
-        // Inicia o parser na primeira regra
-        ParseTree tree = parser.script();                
+        veditParser parser = new veditParser(tokens);                
+        
+        ParseTree tree = null;        
+        try{
+            // apenas usados para interromper o fluxo logo no primeiro erro
+            lexer.addErrorListener(new StopFlowErrorListener());
+            parser.addErrorListener(new StopFlowErrorListener());
+            // Inicia o parser na primeira regra
+            tree = parser.script();                
+        }catch (ParseCancellationException ex) {
+            // parsing cancelado na análise léxica ou sintática            
+            System.exit(0);
+        }
+                
         // Semântico
         SemanticVisitor semantic_loader = new SemanticVisitor();
         try {
