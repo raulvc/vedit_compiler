@@ -1,4 +1,12 @@
-vedit_compiler
-==============
+Video Edit Compiler vAlpha
+==========================
+ffmpeg scripting with antlr4 parsing
+(see input_example for an easier understanding)
 
-Antlr-based video editing script compiler
+Dependencies:
+- antlr4
+http://www.antlr.org/download.html
+- jna
+https://github.com/twall/jna
+- mediainfo
+http://mediaarea.net/en/MediaInfo/Download
